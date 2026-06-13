@@ -21,9 +21,17 @@ export function missingSkills(profileSkills: string[] = [], roleSkills: string[]
   return roleSkills.filter((skill) => !profile.has(normalizeSkill(skill)));
 }
 
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function hasSkill(text: string, skill: string) {
+  return new RegExp(`(?:^|[^a-z0-9+#.])${escapeRegExp(skill)}(?:$|[^a-z0-9+#.])`, 'i').test(text);
+}
+
 export function analyzeResumeText(text: string) {
   const lower = text.toLowerCase();
-  const skills = KNOWN_SKILLS.filter((skill) => lower.includes(skill));
+  const skills = KNOWN_SKILLS.filter((skill) => hasSkill(lower, skill));
   const hasContact = /@|linkedin\.com|github\.com/i.test(text);
   const hasMetrics = /\b\d+%|\b\d+x|\b\d+\+/.test(text);
   const sections = ['experience', 'education', 'projects', 'skills'].filter((section) => lower.includes(section));

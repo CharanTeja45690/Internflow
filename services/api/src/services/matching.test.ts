@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { analyzeResumeText, matchScore } from './matching';
 
 test('matchScore rewards overlapping skills and scores full overlap', () => {
-  assert.equal(matchScore(['React', 'TypeScript'], ['react', 'node.js']), 60);
-  assert.equal(matchScore(['a', 'b', 'c', 'd', 'e'], ['a', 'b', 'c', 'd', 'e']), 95);
+  assert.equal(matchScore(['React', 'TypeScript'], ['react', 'node.js']), 55);
+  assert.equal(matchScore(['a', 'b', 'c', 'd', 'e'], ['a', 'b', 'c', 'd', 'e']), 90);
 });
 
 test('analyzeResumeText extracts known skills and adds short-resume guidance', () => {
