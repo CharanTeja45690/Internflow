@@ -1,2 +1,2 @@
-import { app } from './app'; import { connectDb } from './config/db'; import { env } from './config/env';
-connectDb().then(()=>app.listen(env.PORT,()=>console.log(`InternFlow API listening on ${env.PORT}`))).catch(err=>{ console.error('Failed to start API',err); process.exit(1); });
+import http from 'http'; import { app } from './app'; import { connectDb } from './config/db'; import { env } from './config/env'; import { initRealtime } from './services/notifications';
+connectDb().then(()=>{ const server=http.createServer(app); initRealtime(server); server.listen(env.PORT,()=>console.log(`InternFlow API listening on ${env.PORT}`)); }).catch(err=>{ console.error('Failed to start API',err); process.exit(1); });
