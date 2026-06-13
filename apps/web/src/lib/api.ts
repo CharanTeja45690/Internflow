@@ -1,7 +1,5 @@
 import axios from 'axios';
-
-export type AuthUser = { id: string; email: string; roles?: string[] };
-export type AuthPayload = { accessToken: string; refreshToken?: string; user?: AuthUser };
+import type { AuthPayload } from '../types';
 
 export const api = axios.create({ baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:4000/api' });
 
