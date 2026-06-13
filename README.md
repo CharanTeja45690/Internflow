@@ -93,7 +93,7 @@ This repo includes GitHub Actions workflows for production confidence:
 - `.github/workflows/ci.yml` builds and tests every push/PR.
 - `.github/workflows/smoke.yml` can run scheduled deployed-environment checks once `SMOKE_BASE_URL` and `SMOKE_API_URL` repository secrets are configured.
 
-See `docs/PRODUCTION_DEPLOYMENT.md` for the complete deployment runbook, go-live checklist, and Phase 3 production foundation.
+See `docs/PRODUCTION_DEPLOYMENT.md` for the complete deployment runbook, step-by-step setup guide, go-live checklist, next production plan, and Phase 3 production foundation.
 
 ## Environment variables
 

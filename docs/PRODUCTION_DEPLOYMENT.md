@@ -122,3 +122,59 @@ Required production foundation:
 4. Usage limits for platform protection, not monetization.
 5. AI regression tests that verify grounded answers and privacy boundaries.
 6. Scheduled smoke checks for the Copilot endpoint once it exists.
+
+## Step-by-step setup guide
+
+### 1. Create the database
+
+1. Create a MongoDB Atlas Free cluster.
+2. Create an app database user.
+3. Copy the Atlas connection string.
+4. Use that value as `MONGODB_URI` in the API host.
+
+### 2. Deploy the API
+
+1. Create a Render/Railway/Fly service from this repository.
+2. Configure it as a Node.js web service.
+3. Set the install command to `npm install`.
+4. Set the build command to `npm run build -w packages/shared && npm run build -w services/api`.
+5. Set the start command to `npm run start -w services/api`.
+6. Add the API environment variables from `.env.production.example`.
+7. Open `https://<api-host>/health` and confirm HTTP 200.
+
+### 3. Deploy the frontend on Cloudflare Pages
+
+1. Create a Cloudflare Pages project from this repository.
+2. Set the build command to `npm install && npm run build -w apps/web`.
+3. Set the output directory to `apps/web/dist`.
+4. Set `VITE_API_URL=https://<api-host>/api`.
+5. Deploy and open the generated `*.pages.dev` URL.
+6. Set API `CORS_ORIGIN` to the exact Cloudflare Pages origin.
+7. Redeploy the API after changing `CORS_ORIGIN`.
+
+### 4. Deploy the frontend on Vercel fallback
+
+1. Import the repository into Vercel.
+2. Keep the project root at the repository root.
+3. Use the committed `vercel.json`.
+4. Set `VITE_API_URL=https://<api-host>/api`.
+5. Deploy and open the generated Vercel URL.
+6. If using Vercel instead of Cloudflare Pages, set API `CORS_ORIGIN` to the Vercel origin.
+
+### 5. Enable CI and smoke checks
+
+1. Confirm GitHub Actions CI passes on the branch.
+2. Add repository secrets:
+   - `SMOKE_BASE_URL=https://<frontend-host>`
+   - `SMOKE_API_URL=https://<api-host>`
+3. Trigger the `Production smoke checks` workflow manually.
+4. Leave the 6-hour schedule enabled after the first successful manual run.
+
+## Next production plan
+
+1. Move resume uploads from local disk to Cloudflare R2 before accepting real user resumes.
+2. Add API integration tests against an isolated MongoDB test database.
+3. Add Playwright E2E tests for login, discovery, application tracking, resume upload, and recruiter posting.
+4. Add an internal scheduled-job endpoint protected by `INTERNAL_JOB_SECRET` for reminder and recommendation loops.
+5. Add application follow-up reminders and in-app notifications.
+6. Add Phase 3 Career Copilot foundations without payments: conversations, messages, context grounding, provider abstraction, usage limits for abuse protection, privacy tests, and AI regression checks.
