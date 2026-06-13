@@ -1,5 +1,33 @@
 const KNOWN_SKILLS = [
-  'javascript','typescript','react','node.js','express','mongodb','python','sql','postgresql','aws','docker','git','html','css','java','c++','go','redis','graphql','next.js','tailwind','figma','excel','machine learning','data analysis'
+  'javascript',
+  'typescript',
+  'react',
+  'node.js',
+  'express',
+  'mongodb',
+  'python',
+  'sql',
+  'postgresql',
+  'aws',
+  'docker',
+  'git',
+  'html',
+  'css',
+  'java',
+  'c++',
+  'go',
+  'redis',
+  'graphql',
+  'next.js',
+  'tailwind',
+  'figma',
+  'excel',
+  'machine learning',
+  'data analysis',
+  'rest api',
+  'testing',
+  'ci/cd',
+  'kubernetes',
 ];
 
 export function normalizeSkill(skill: string) {
@@ -29,27 +57,53 @@ function hasSkill(text: string, skill: string) {
   return new RegExp(`(?:^|[^a-z0-9+#.])${escapeRegExp(skill)}(?:$|[^a-z0-9+#.])`, 'i').test(text);
 }
 
+function unique<T>(items: T[]) {
+  return [...new Set(items)];
+}
+
 export function analyzeResumeText(text: string) {
   const lower = text.toLowerCase();
   const skills = KNOWN_SKILLS.filter((skill) => hasSkill(lower, skill));
-  const hasContact = /@|linkedin\.com|github\.com/i.test(text);
-  const hasMetrics = /\b\d+%|\b\d+x|\b\d+\+/.test(text);
+  const hasContact = /[\w.+-]+@[\w.-]+\.[a-z]{2,}|linkedin\.com|github\.com/i.test(text);
+  const hasMetrics = /\b\d+%|\b\d+x|\b\d+\+|\$\d+/i.test(text);
+  const hasActionVerbs = /\b(built|created|delivered|improved|reduced|launched|implemented|automated|optimized|led)\b/i.test(text);
   const sections = ['experience', 'education', 'projects', 'skills'].filter((section) => lower.includes(section));
   const atsIssues = [
     text.length < 800 ? 'Resume appears short; add measurable project, internship, and leadership impact.' : '',
     !hasContact ? 'Add email plus LinkedIn/GitHub or portfolio links near the top.' : '',
     sections.length < 3 ? 'Use clear sections for Education, Skills, Projects, and Experience.' : '',
     !hasMetrics ? 'Quantify outcomes with numbers such as users, latency, revenue, or accuracy improvements.' : '',
+    /\b(table|textbox|columns?)\b/i.test(text) ? 'Avoid complex tables, text boxes, and multi-column layouts that can confuse ATS parsers.' : '',
   ].filter(Boolean);
-  const resumeScore = Math.min(95, 35 + skills.length * 4 + sections.length * 7 + (hasContact ? 8 : 0) + (hasMetrics ? 10 : 0) + (text.length > 1200 ? 10 : 0));
+  const recommendations = unique([
+    skills.length < 6 ? 'Add more target-role keywords from internship descriptions to your Skills section.' : '',
+    !hasActionVerbs ? 'Start bullets with strong action verbs such as built, automated, optimized, or led.' : '',
+    'Mirror the top skills from target internships in your skills and project bullets.',
+    'Lead bullets with action verbs and measurable outcomes.',
+    'Keep formatting simple for ATS parsing and include links to proof-of-work.',
+  ].filter(Boolean));
+  const resumeScore = Math.min(
+    95,
+    35 + skills.length * 4 + sections.length * 7 + (hasContact ? 8 : 0) + (hasMetrics ? 10 : 0) + (hasActionVerbs ? 6 : 0) + (text.length > 1200 ? 10 : 0) + (atsIssues.length ? 0 : 4),
+  );
   return {
-    resumeScore,
+    resumeScore: Math.max(0, resumeScore),
+    atsCompatibility: Math.max(0, Math.min(100, 100 - atsIssues.length * 12)),
     skillMatrix: skills.map((name) => ({ name, confidence: 0.82 })),
     atsIssues,
-    recommendations: [
-      'Mirror the top skills from target internships in your skills and project bullets.',
-      'Lead bullets with action verbs and measurable outcomes.',
-      'Keep formatting simple for ATS parsing and include links to proof-of-work.',
-    ],
+    recommendations,
+  };
+}
+
+export function matchInternship(profileSkills: string[] = [], roleSkills: string[] = [], preferredRoles: string[] = [], title = '') {
+  const missing = missingSkills(profileSkills, roleSkills);
+  return {
+    matchScore: matchScore(profileSkills, roleSkills, preferredRoles, title),
+    missingSkills: missing,
+    skillGap: {
+      missing,
+      matched: roleSkills.filter((skill) => !missing.map(normalizeSkill).includes(normalizeSkill(skill))),
+      gapCount: missing.length,
+    },
   };
 }
