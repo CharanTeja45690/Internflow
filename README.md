@@ -63,6 +63,38 @@ infrastructure           Local Docker Compose configuration
 | PATCH | `/api/applications/:id/status` | Move an application through the pipeline |
 | GET/POST | `/api/resumes` and `/api/resumes/upload` | List resumes and upload for analysis |
 
+
+## Production deployment
+
+Production deployment is configured for the current codebase without monetization, subscriptions, or payment features. Use **Cloudflare Pages first** or **Vercel fallback** for the Vite frontend, and deploy the Express API as a persistent Node.js service on Render, Railway, or Fly.io. Netlify is intentionally skipped.
+
+### Frontend hosting
+
+- Cloudflare Pages build command: `npm install && npm run build -w apps/web`
+- Cloudflare Pages output directory: `apps/web/dist`
+- Vercel uses the included `vercel.json` with the same Vite build output.
+- Required frontend environment variable: `VITE_API_URL=https://<api-host>/api`
+
+### API hosting
+
+Deploy `services/api` as a long-running Node/Express service. The API is not converted to serverless in this setup.
+
+- Install command: `npm install`
+- Build command: `npm run build -w packages/shared && npm run build -w services/api`
+- Start command: `npm run start -w services/api`
+- Health check path: `/health`
+
+Required API environment variables are shown in `.env.production.example`. Use MongoDB Atlas Free for production because the backend currently uses Mongoose and `MONGODB_URI`.
+
+### CI and smoke checks
+
+This repo includes GitHub Actions workflows for production confidence:
+
+- `.github/workflows/ci.yml` builds and tests every push/PR.
+- `.github/workflows/smoke.yml` can run scheduled deployed-environment checks once `SMOKE_BASE_URL` and `SMOKE_API_URL` repository secrets are configured.
+
+See `docs/PRODUCTION_DEPLOYMENT.md` for the complete deployment runbook, step-by-step setup guide, go-live checklist, next production plan, and Phase 3 production foundation.
+
 ## Environment variables
 
 See `.env.example` for required configuration. Use strong, unique JWT secrets in staging and production.

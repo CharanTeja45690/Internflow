@@ -1,0 +1,23 @@
+name: Production smoke checks
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check configured URLs
+        env:
+          SMOKE_BASE_URL: ${{ secrets.SMOKE_BASE_URL }}
+          SMOKE_API_URL: ${{ secrets.SMOKE_API_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SMOKE_BASE_URL:-}" ] || [ -z "${SMOKE_API_URL:-}" ]; then
+            echo "Set SMOKE_BASE_URL and SMOKE_API_URL repository secrets before enabling production smoke checks."
+            exit 1
+          fi
+          curl --fail --silent --show-error --location "$SMOKE_BASE_URL" >/dev/null
+          curl --fail --silent --show-error --location "$SMOKE_API_URL/health" >/dev/null
