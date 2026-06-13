@@ -4,7 +4,7 @@ InternFlow is an AI-powered Career Operating System for students. This repositor
 
 ## Implemented roadmap scope
 
-### Phase 1 — Career Discovery MVP
+### Phase 1 - Career Discovery MVP
 - Email/password authentication with bcrypt and JWT access/refresh tokens.
 - Universal student profile with education, skills, projects, and preferences.
 - Internship discovery API with search, filters, source URL retention, and match scoring.
@@ -12,7 +12,7 @@ InternFlow is an AI-powered Career Operating System for students. This repositor
 - Manual application tracker with lifecycle statuses and status history.
 - React student app for auth, dashboard, discovery, tracker, and profile.
 
-### Phase 2 — Resume Intelligence
+### Phase 2 - Resume Intelligence
 - Resume upload endpoint with 10 MB limit.
 - Resume text analysis scaffold that extracts common skills, computes a resume score, and returns ATS recommendations.
 - Skill matrix persistence back into the student profile.
