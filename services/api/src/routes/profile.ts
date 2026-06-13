@@ -1,0 +1,4 @@
+import { Router } from 'express'; import { profileSchema } from '@internflow/shared'; import { requireAuth } from '../middleware/auth'; import { Profile } from '../models/Profile'; import { asyncHandler } from '../utils/asyncHandler';
+export const profileRouter=Router(); profileRouter.use(requireAuth);
+profileRouter.get('/me', asyncHandler(async(req,res)=>res.json(await Profile.findOne({userId:req.user!.id}))));
+profileRouter.put('/me', asyncHandler(async(req,res)=>{ const input=profileSchema.parse(req.body); const completeness=20+(input.education?.length?20:0)+(input.skills?.length?25:0)+(input.preferences?.roles?.length?20:0)+(input.bio?15:0); const profile=await Profile.findOneAndUpdate({userId:req.user!.id},{...input,completenessScore:Math.min(100,completeness)},{new:true,upsert:true}); res.json(profile); }));

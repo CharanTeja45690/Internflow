@@ -1,0 +1,4 @@
+import mongoose, { Schema } from 'mongoose';
+const profileSchema = new Schema({ userId: { type: Schema.Types.ObjectId, ref: 'User', unique: true, required: true }, fullName: String, phone: String, location: String, bio: String, avatarUrl: String, completenessScore: { type: Number, default: 0 }, education: [{ institution: String, degree: String, fieldOfStudy: String, graduationYear: Number }], skills: [{ name: String, proficiencyLevel: { type: Number, min: 1, max: 5, default: 3 }, source: { type: String, enum: ['manual','resume_extracted'], default: 'manual' } }], projects: [{ title: String, description: String, techStack: [String], url: String, qualityScore: Number }], preferences: { roles: [String], locations: [String], workModes: [String], minStipend: Number } }, { timestamps: true });
+profileSchema.index({ 'skills.name': 1 });
+export const Profile = mongoose.model('Profile', profileSchema);

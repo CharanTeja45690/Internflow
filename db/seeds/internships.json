@@ -1,0 +1,4 @@
+[
+  {"company":"Razorpay","title":"SDE Intern","description":"Build payments experiences with React and Node.js.","skills":["React","Node.js","TypeScript"],"location":"Bangalore","workMode":"hybrid","stipendMin":40000,"source":"seed","sourceUrl":"https://example.com/razorpay-sde-intern","difficultyScore":72},
+  {"company":"Postman","title":"API Platform Intern","description":"Improve developer tooling and REST API test workflows.","skills":["JavaScript","REST","Testing"],"location":"Remote","workMode":"remote","stipendMin":30000,"source":"seed","sourceUrl":"https://example.com/postman-api-intern","difficultyScore":62}
+]
