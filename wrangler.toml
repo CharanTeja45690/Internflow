@@ -1,0 +1,7 @@
+name = "internflow-web"
+compatibility_date = "2026-06-13"
+pages_build_output_dir = "apps/web/dist"
+
+[vars]
+# Set VITE_API_URL in the Cloudflare Pages dashboard for production, for example:
+# VITE_API_URL = "https://internflow-api.onrender.com/api"
