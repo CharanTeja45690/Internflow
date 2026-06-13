@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run build:shared && npm run build:web",
+  "buildCommand": "ROOT=$(git rev-parse --show-toplevel) && npm --prefix $ROOT run build:shared && npm --prefix $ROOT run build:web",
   "outputDirectory": "apps/web/dist",
   "installCommand": "npm install",
   "framework": null,
