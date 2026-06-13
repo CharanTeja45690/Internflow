@@ -1,0 +1,4 @@
+import mongoose, { Schema } from 'mongoose';
+const sessionSchema = new Schema({ refreshTokenHash: { type: String, required: true }, userAgent: String, ip: String, expiresAt: Date, revokedAt: Date }, { timestamps: true });
+const userSchema = new Schema({ email: { type: String, required: true, unique: true, lowercase: true, trim: true }, passwordHash: { type: String, required: true }, authProvider: { type: String, enum: ['email','google'], default: 'email' }, roles: { type: [String], default: ['student'] }, status: { type: String, enum: ['active','suspended','deleted'], default: 'active' }, sessions: [sessionSchema] }, { timestamps: true });
+export const User = mongoose.model('User', userSchema);

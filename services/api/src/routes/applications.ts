@@ -1,0 +1,6 @@
+import { Router } from 'express'; import { applicationSchema } from '@internflow/shared'; import { requireAuth } from '../middleware/auth'; import { Application } from '../models/Application'; import { asyncHandler } from '../utils/asyncHandler';
+export const applicationRouter=Router(); applicationRouter.use(requireAuth);
+applicationRouter.get('/', asyncHandler(async(req,res)=>res.json(await Application.find({userId:req.user!.id}).sort({updatedAt:-1}))));
+applicationRouter.post('/', asyncHandler(async(req,res)=>{ const input=applicationSchema.parse(req.body); const doc=await Application.create({...input,userId:req.user!.id,statusHistory:[{to:input.status}]}); res.status(201).json(doc); }));
+applicationRouter.patch('/:id/status', asyncHandler(async(req,res)=>{ const {status}=req.body; const app=await Application.findOne({_id:req.params.id,userId:req.user!.id}); if(!app) return res.status(404).json({message:'Application not found'}); const from=app.status; app.status=status; app.statusHistory.push({from,to:status,changedAt:new Date()} as any); await app.save(); res.json(app); }));
+applicationRouter.patch('/:id', asyncHandler(async(req,res)=>res.json(await Application.findOneAndUpdate({_id:req.params.id,userId:req.user!.id},req.body,{new:true}))));

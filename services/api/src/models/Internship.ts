@@ -1,0 +1,4 @@
+import mongoose, { Schema } from 'mongoose';
+const internshipSchema = new Schema({ company: { type: String, required: true }, title: { type: String, required: true }, description: { type: String, required: true }, requirements: [String], skills: [String], location: String, workMode: { type: String, enum: ['remote','hybrid','onsite'], default: 'remote' }, stipendMin: Number, stipendMax: Number, currency: { type: String, default: 'INR' }, deadline: Date, source: { type: String, required: true }, sourceUrl: { type: String, required: true }, difficultyScore: { type: Number, default: 50 }, isActive: { type: Boolean, default: true }, embedding: [Number] }, { timestamps: true });
+internshipSchema.index({ title: 'text', company: 'text', description: 'text', skills: 'text' }); internshipSchema.index({ isActive: 1, deadline: 1 }); internshipSchema.index({ sourceUrl: 1 }, { unique: true });
+export const Internship = mongoose.model('Internship', internshipSchema);

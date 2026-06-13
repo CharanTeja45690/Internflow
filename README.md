@@ -1,34 +1,76 @@
-# INTERNFLOW — Master Engineering Notebook v1.1
+# InternFlow
 
-A production-grade architecture notebook for InternFlow, an AI-powered Career Operating System for Students, designed to scale from 100 to 1,000,000+ users — with a **$0/month MVP stack**.
+InternFlow is an AI-powered Career Operating System for students. This repository now contains a production-oriented Phase 1 + Phase 2 skeleton with a React frontend, Node.js/Express API, MongoDB models, JWT authentication, internship discovery, application tracking, resume analysis, recommendation scoring, environment configuration, and local infrastructure.
 
-## Document Index
+## Implemented roadmap scope
 
-| File | Contents |
-|---|---|
-| `00_PRODUCT_VISION_AND_MARKET.md` | Product Vision, Market Opportunity, Problem Analysis |
-| `01_PERSONAS_JOURNEYS_REQUIREMENTS.md` | User Personas, Journey Maps, User Flows, Functional & Non-Functional Requirements |
-| `02_MODULE_BREAKDOWN.md` | Modules 1–16: Purpose, Business Value, Logic, DB Entities, APIs, Security, Scaling |
-| `03_SYSTEM_ARCHITECTURE.md` | Service Boundaries, System Architecture, Microservices, Event-Driven Architecture, Caching |
-| `04_DATABASE_DESIGN.md` | Complete ERD, Tables (full SQL DDL), Indexes, Partitioning, Row-Level Security |
-| `05_AI_RAG_RECOMMENDATION_SEARCH.md` | AI Architecture, RAG Architecture, Resume Pipeline, Recommendation Engine, Analytics, Search |
-| `06_SCRAPING_NOTIFICATION_FRONTEND_PORTALS.md` | Scraping Infrastructure, Notifications, Frontend, Browser Extension, Recruiter/College Portals |
-| `07_DEVOPS_SECURITY_TESTING.md` | CI/CD, Monitoring, DR, Security (Auth/Encryption/OWASP/LLM), Testing Strategy |
-| `08_DOCUMENTATION_SUITE.md` | PRD, SRS, HLD, LLD, API Documentation Index, Operational Runbooks |
-| `09_ROADMAP_PHASES_1_5.md` | Detailed Phase 1–5 roadmap: features, dependencies, team, timelines, risks |
-| `10_REPO_STRUCTURE_COSTS_SCALING.md` | Monorepo structure, Tech Stack Justification, Cost Estimates, Scaling 100→1M |
-| `11_ZERO_COST_STACK.md` | **NEW** — Complete $0/mo free-tier stack mapping + Master Plan vs Notebook verification |
+### Phase 1 — Career Discovery MVP
+- Email/password authentication with bcrypt and JWT access/refresh tokens.
+- Universal student profile with education, skills, projects, and preferences.
+- Internship discovery API with search, filters, source URL retention, and match scoring.
+- Direct apply support through source links.
+- Manual application tracker with lifecycle statuses and status history.
+- React student app for auth, dashboard, discovery, tracker, and profile.
 
-## What's New in v1.1
-- **Part 11**: Full zero-cost infrastructure mapping — every service (frontend, backend, DB, AI, storage, auth, scraping, notifications, search, DevOps, CDN) mapped to a free tier with limits and alternatives.
-- **Verification matrix**: Every module in the original master plan cross-referenced with the notebook, showing matched, expanded, and new additions.
-- **Interactive prototype**: See `internflow-prototype.jsx` — a React artifact showing all 8 product screens with the zero-cost stack reference.
+### Phase 2 — Resume Intelligence
+- Resume upload endpoint with 10 MB limit.
+- Resume text analysis scaffold that extracts common skills, computes a resume score, and returns ATS recommendations.
+- Skill matrix persistence back into the student profile.
+- Cold-start recommendation endpoint that ranks internships using profile/resume skills.
+- Resume score UI in the React app.
 
-## Suggested Reading Order
-1. Start with `00` and `01` for product/business context.
-2. Read `02` for the full feature/module catalog.
-3. Read `03` and `04` for core architecture and data model.
-4. Read `05` and `06` for AI and infrastructure deep dives.
-5. Read `07` and `08` for operational and documentation standards.
-6. Read `09` and `10` for execution roadmap and scaling economics.
-7. **Read `11` for the zero-cost stack and plan verification.**
+## Repository structure
+
+```text
+apps/web                 React + Vite frontend
+services/api             Node.js + Express + MongoDB backend
+packages/shared          Shared Zod schemas and TypeScript types
+db/seeds                 Seed data for development
+infrastructure           Local Docker Compose configuration
+```
+
+## Quick start
+
+1. Copy environment variables:
+   ```bash
+   cp .env.example .env
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start MongoDB locally or via Docker:
+   ```bash
+   docker compose -f infrastructure/docker-compose.yml up mongo
+   ```
+4. Run the API and web app:
+   ```bash
+   npm run dev
+   ```
+5. Open the frontend at `http://localhost:5173` and the API health check at `http://localhost:4000/health`.
+
+## Core API routes
+
+| Method | Route | Description |
+|---|---|---|
+| POST | `/api/auth/register` | Create a student account and profile |
+| POST | `/api/auth/login` | Login with email/password |
+| POST | `/api/auth/refresh` | Issue a new access token |
+| GET/PUT | `/api/profile/me` | Read or update the current student profile |
+| GET/POST | `/api/internships` | Search/list or create internship records |
+| GET | `/api/recommendations` | Ranked cold-start internship feed |
+| GET/POST | `/api/applications` | List or create tracked applications |
+| PATCH | `/api/applications/:id/status` | Move an application through the pipeline |
+| GET/POST | `/api/resumes` and `/api/resumes/upload` | List resumes and upload for analysis |
+
+## Environment variables
+
+See `.env.example` for required configuration. Use strong, unique JWT secrets in staging and production.
+
+## Production hardening notes
+
+- Replace the local resume text parser with a PDF/DOCX extraction pipeline and asynchronous queue before public launch.
+- Move uploaded resumes to encrypted object storage with signed URLs.
+- Add Google OAuth once OAuth credentials and callback domains are available.
+- Add API integration tests backed by an ephemeral MongoDB instance.
+- Seed the source registry and skill taxonomy before launch.
