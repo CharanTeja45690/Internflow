@@ -8,7 +8,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState(localStorage.getItem('accessToken'));
   const [user, setUser] = useState<AuthUser | null>(() => JSON.parse(localStorage.getItem('currentUser') || 'null'));
-  const role: Role = user?.roles?.includes('recruiter') ? 'recruiter' : 'student';
+  const role: Role = user?.roles?.includes('admin') ? 'admin' : user?.roles?.includes('recruiter') ? 'recruiter' : 'student';
   const value = useMemo(() => ({ token, user, role, isAuthenticated: Boolean(token), login(payload: AuthPayload) { storeAuth(payload); setToken(payload.accessToken); setUser(payload.user ?? null); }, logout() { clearAuth(); setToken(null); setUser(null); } }), [token, user, role]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
